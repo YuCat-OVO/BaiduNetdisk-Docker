@@ -18,13 +18,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
 
-      - name: Set Version
-        id: set-version
+      - name: Set Vars
+        id: set-vars
         run: |
           VERSION="1.0.0"
           BAIDUNETDISK_VERSION="4.17.7"
           GITHUB_REF=${{ github.ref }}
           BRACH=${GITHUB_REF#refs/heads/}
+          DATE=$(date '+%Y-%m-%dT%H:%M:%S%Z')
 
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
           echo "BAIDUNETDISK_VERSION=${BAIDUNETDISK_VERSION}" >> $GITHUB_OUTPUT
@@ -37,8 +38,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ steps.set-version.outputs.VERSION }}
-            type=raw,value=${{ steps.set-version.outputs.BRACH }}
+            type=raw,value=${{ steps.set-vars.outputs.VERSION }}
+            type=raw,value=${{ steps.set-vars.outputs.BRACH }}
             type=raw,value=latest
 
       - name: Set up QEMU
@@ -63,8 +64,8 @@ jobs:
             linux/amd64
           push: true
           build-args: |
-            BUILD_DATE=${GITHUB_DATE}
-            VERSION=${VERSION}
-            BAIDUNETDISK_VERSION=${BAIDUNETDISK_VERSION}
+            BUILD_DATE=${{ steps.set-vars.outputs.DATE }}
+            VERSION=${{ steps.set-vars.outputs.VERSION }}
+            BAIDUNETDISK_VERSION=${{ steps.set-vars.outputs.BAIDUNETDISK_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
