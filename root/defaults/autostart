@@ -1,0 +1,1 @@
+/opt/baidunetdisk/baidunetdisk --no-sandbox $CLI_ARGS
