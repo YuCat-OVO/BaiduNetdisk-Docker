@@ -22,16 +22,15 @@ RUN \
     curl -o \
     /kclient/public/icon.png \
     https://raw.githubusercontent.com/YuCat-OVO/BaiduNetdisk-Docker/master/docs/baidunetdisk.png && \
+    echo "**** fix trusted.gpg ****" && \
+    mv /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/docker.gpg && \
     echo "**** install runtime packages ****" && \
     apt-get update && \
+    apt-get dist-upgrade -y && \
     apt-get install -y --no-install-recommends \
     wget \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
-    libgtk-3-0 \
-    libnotify4 \
-    libatspi2.0-0 \
-    libsecret-1-0 \
     desktop-file-utils && \
     echo "**** install BaiduNetdisk ****" && \
     if [ -z ${BAIDUNETDISK_VERSION+x} ]; then \
@@ -43,6 +42,11 @@ RUN \
     curl -o \
     /tmp/baidunetdisk.deb -L \
     "$BAIDUNETDISK_URL" && \
+    for i in \
+    $(dpkg -I /tmp/baidunetdisk.deb | grep "Depends" | cut -c11- | awk -F ', ' '{ for(i=1; i<=NF; i++) print $i }'); \
+    do \
+    apt-get install -y --no-install-recommends ${i}; \
+    done && \
     dpkg -i /tmp/baidunetdisk.deb && \
     echo "**** cleanup ****" && \
     apt-get clean && \
