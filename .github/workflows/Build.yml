@@ -4,15 +4,14 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
-    paths:
-      - Dockerfile
+      - "*"
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
+  AMD64:
     name: Setup
     runs-on: ubuntu-latest
     steps:
@@ -24,8 +23,13 @@ jobs:
         run: |
           VERSION="1.0.0"
           BAIDUNETDISK_VERSION="4.17.7"
+          GITHUB_REF=${{ github.ref }}
+          BRACH=${GITHUB_REF#refs/heads/}
+
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
           echo "BAIDUNETDISK_VERSION=${BAIDUNETDISK_VERSION}" >> $GITHUB_OUTPUT
+          echo "GITHUB_REF=${GITHUB_REF}" >> $GITHUB_OUTPUT
+          echo "BRACH=${BRACH}" >> $GITHUB_OUTPUT
 
       - name: Docker meta
         id: meta
@@ -34,6 +38,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ steps.set-version.outputs.VERSION }}
+            type=raw,value=${{ steps.set-version.outputs.BRACH }}
             type=raw,value=latest
 
       - name: Set up QEMU
