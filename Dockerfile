@@ -26,7 +26,6 @@ RUN \
     mv /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/docker.gpg && \
     echo "**** install runtime packages ****" && \
     apt-get update && \
-    apt-get dist-upgrade -y && \
     apt-get install -y --no-install-recommends \
     wget \
     fonts-wqy-microhei \

@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - '.github/**'
       - 'docs/**'
+      - 'README.md'
 
 env:
   REGISTRY: ghcr.io
