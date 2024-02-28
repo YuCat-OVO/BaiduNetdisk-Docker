@@ -7,7 +7,7 @@ ARG BUILD_DATE
 ARG VERSION
 ARG BAIDUNETDISK_VERSION
 LABEL build_version="version:- ${VERSION} Build-date:- ${BUILD_DATE}"
-# LABEL maintainer=""
+LABEL maintainer="YuCat-OVO"
 
 # https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_amd64.deb
 
