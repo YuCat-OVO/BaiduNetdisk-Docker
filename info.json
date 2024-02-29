@@ -1,0 +1,20 @@
+[
+    {
+        "arch": "x86_64",
+        "pak": "rpm",
+        "url": "https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.11.5/baidunetdisk-4.11.5.x86_64.rpm",
+        "version": "4.11.5"
+    },
+    {
+        "arch": "amd64",
+        "pak": "deb",
+        "url": "https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.11.5/baidunetdisk_4.11.5_amd64.deb",
+        "version": "4.11.5"
+    },
+    {
+        "arch": "arm64",
+        "pak": "deb",
+        "url": "https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_arm64.deb",
+        "version": "4.17.7"
+    }
+]
