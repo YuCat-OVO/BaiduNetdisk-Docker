@@ -9,9 +9,15 @@ GLOBAL_HEADER = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
 }
 
+# 截至2024-03-01最新的版本
+GLOBAL_VERSION = [
+    "https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.11.5/baidunetdisk-4.11.5.x86_64.rpm",
+    "https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.11.5/baidunetdisk_4.11.5_amd64.deb",
+]
+
 # 定义需要检测的版本号范围
+max_version = [4, 18, 10]
 min_version = [4, 17, 0]
-max_version = [4, 20, 0]
 
 # 定义请求延时时间（秒）
 GLOBAL_REQUEST_DELAY = 0.5
@@ -72,26 +78,30 @@ def parse_url_from_json() -> list:
 def parse_url_from_js():
     """从js文件中提取下载的链接并且去重,写入文件"""
     url = get_js_url()
-    d_url = ""
-    r = requests.get(
-        url,
-        headers=GLOBAL_HEADER,
-    )
-    # 过滤链接
-    d_url = re.findall(
-        '(?:link|url(?:_[0-9])?):"https://[a-zA-Z/\\.]*?/netdisk/[a-zA-Z10-9/\\._-]*?(?=")',
-        r.text,
-    )
-
-    # 清理
-    for i in range(len(d_url)):
-        d_url[i] = re.sub('(link|url(?:_[0-9])?):"', "", d_url[i])
-
-    # 去重
     u_url = []
-    for i in d_url:
-        if i not in u_url:
-            u_url.append(i)
+    try:
+        d_url = ""
+        r = requests.get(
+            url,
+            headers=GLOBAL_HEADER,
+        )
+        # 过滤链接
+        d_url = re.findall(
+            '(?:link|url(?:_[0-9])?):"https://[a-zA-Z/\\.]*?/netdisk/[a-zA-Z10-9/\\._-]*?(?=")',
+            r.text,
+        )
+
+        # 清理
+        for i in range(len(d_url)):
+            d_url[i] = re.sub('(link|url(?:_[0-9])?):"', "", d_url[i])
+
+        # 去重
+        for i in d_url:
+            if i not in u_url:
+                u_url.append(i)
+    except Exception as e:
+        print(e)
+        u_url = GLOBAL_VERSION
 
     with open("url.json", "w") as f:
         f.write(json.dumps(u_url, sort_keys=True, indent=4))
@@ -144,7 +154,7 @@ def check_version(version):
     url = make_url_temple().format(".".join(str(v) for v in version))
     # url = "https://httpbin.org/status/200"
     print("Getting {0}".format(url))
-    response = requests.get(
+    response = requests.head(
         url,
         headers=GLOBAL_HEADER,
     )
@@ -156,40 +166,30 @@ def check_version(version):
 
 def find_latest_version(min_version, max_version):
     """寻找最新版本号"""
-    for i in range(max_version[0], min_version[0] - 1, -1):
-        for j in range(20, -1, -1):
-            if j > max_version[1] and i == max_version[0]:
-                continue
-            for k in range(20, -1, -1):
-                if k > max_version[2] and j == max_version[1] and i == max_version[0]:
-                    continue
-                version = [i, j, k]
-                # 检测指定版本号是否可用
-                if check_version(version):
-                    print(
-                        "version {0} is available".format(
-                            ".".join(str(v) for v in version)
-                        )
-                    )
-                    time.sleep(GLOBAL_REQUEST_DELAY)
-                    # 判断是否为最新版本
-                    if (
-                        version[0] > min_version[0]
-                        or version[1] > min_version[1]
-                        or version[2] > min_version[2]
-                    ):
-                        append_json(
-                            "url.json",
-                            make_url_temple().format(".".join(str(v) for v in version)),
-                        )
-                        return version
-                else:
-                    print(
-                        "version {0} is not available".format(
-                            ".".join(str(v) for v in version)
-                        )
-                    )
-                    time.sleep(GLOBAL_REQUEST_DELAY)
+    version_list = [
+        [x, y, z]
+        for x in range(max_version[0], min_version[0] - 1, -1)
+        for y in range(max_version[1], min_version[1] - 1, -1)
+        for z in range(20, -1, -1)
+        if not (x == max_version[0] and y == max_version[1] and z > max_version[2])
+        if not (x == min_version[0] and y == min_version[1] and z < min_version[2])
+    ]
+    for version in version_list:
+        # 检测指定版本号是否可用
+        if check_version(version):
+            print("version {0} is available".format(".".join(str(v) for v in version)))
+            time.sleep(GLOBAL_REQUEST_DELAY)
+            append_json(
+                "url.json",
+                make_url_temple().format(".".join(str(v) for v in version)),
+            )
+            return version
+        else:
+            print(
+                "version {0} is not available".format(".".join(str(v) for v in version))
+            )
+            time.sleep(GLOBAL_REQUEST_DELAY)
+
     # 找不到可用版本号，返回None
     return None
 
