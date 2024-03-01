@@ -86,5 +86,5 @@ spec:
 
 ## 感谢以下项目:
 - [KasmVNC Base Images from LinuxServer](https://github.com/linuxserver/docker-baseimage-kasmvnc)
-- [baidunetdisk-arm64-vnc](https://github.com/eMUQI/baidunetdisk-arm64-vnc)
+- [eMUQI/baidunetdisk-arm64-vnc](https://github.com/eMUQI/baidunetdisk-arm64-vnc)
 - [gshang2017/docker](https://github.com/gshang2017/docker)
