@@ -16,7 +16,7 @@ GLOBAL_VERSION = [
 ]
 
 # 定义需要检测的版本号范围
-max_version = [4, 20, 0]
+max_version = [4, 18, 0]
 min_version = [4, 17, 0]
 
 # 定义请求延时时间（秒）
@@ -153,15 +153,28 @@ def check_version(version):
     """检测指定版本号是否可用"""
     url = make_url_temple().format(".".join(str(v) for v in version))
     # url = "https://httpbin.org/status/200"
-    print("Getting {0}".format(url))
-    response = requests.head(
-        url,
-        headers=GLOBAL_HEADER,
-    )
-    if response.status_code == 200:
-        return True
-    else:
-        return False
+    # print("Getting {0}".format(url))
+
+    max_attempts = 5
+    attempt = 0
+
+    while attempt < max_attempts:
+        try:
+            response = requests.head(
+                url,
+                headers=GLOBAL_HEADER,
+            )
+            if response.status_code == 200:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            attempt += 1
+            time.sleep(1)  # 等待1秒再重试
+
+    if attempt == max_attempts:
+        print("Failed after several attempts")
 
 
 def find_latest_version(min_version, max_version):
@@ -185,9 +198,9 @@ def find_latest_version(min_version, max_version):
             )
             return version
         else:
-            print(
-                "version {0} is not available".format(".".join(str(v) for v in version))
-            )
+            # print(
+            #     "version {0} is not available".format(".".join(str(v) for v in version))
+            # )
             time.sleep(GLOBAL_REQUEST_DELAY)
 
     # 找不到可用版本号，返回None
@@ -199,4 +212,3 @@ if __name__ == "__main__":
     find_latest_version(min_version, max_version)
     urls = parse_url_from_json()
     make_info_json(urls)
-    pass
