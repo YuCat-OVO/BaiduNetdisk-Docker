@@ -15,21 +15,15 @@ env:
   IMAGE_NAME: BaiduNetdisk-Docker
 
 jobs:
-  Setup:
-    name: Setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@master
-
   Build:
     name: Build
-    needs: Setup
     strategy:
       matrix:
         arch: [linux/amd64, linux/arm64]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@master
       - name: Set variables
         id: set-vars
         run: |
