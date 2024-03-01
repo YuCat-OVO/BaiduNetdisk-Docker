@@ -8,7 +8,7 @@ on:
     branches:
       - "main"
     paths:
-      - 'get_version.py'
+      - "get_version.py"
 
 jobs:
   get-version:
@@ -27,6 +27,8 @@ jobs:
 
       - name: Set up Python
         uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.7"
 
       - name: Run Script
         run: |
@@ -35,12 +37,8 @@ jobs:
 
       - name: Git push assets to "info" branch
         run: |
-          if ! ([ -f "info.json" ] && [ -f "url.json" ]); then exit 1; else mkdir info; mv {info,url}.json info; cd info; fi
-          git init
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b info
-          git add .
+          git add *.json
           git commit -m "${{ steps.set-vars.outputs.RELEASE_NAME }}"
-          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
-          git push -f -u origin info
+          git push
