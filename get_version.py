@@ -16,7 +16,7 @@ GLOBAL_VERSION = [
 ]
 
 # 定义需要检测的版本号范围
-max_version = [4, 18, 10]
+max_version = [4, 20, 0]
 min_version = [4, 17, 0]
 
 # 定义请求延时时间（秒）
