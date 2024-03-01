@@ -11,13 +11,12 @@ on:
       - "README.md"
       - "get_version.py"
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+env: 
+  IMAGE_NAME: BaiduNetdisk-Docker 
 
 jobs:
   Build:
-    name: Build AMD64
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -45,8 +44,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ env.IMAGE_NAME }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+            ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=${{ steps.set-vars.outputs.VERSION }}
             type=raw,value=${{ steps.set-vars.outputs.BRACH }}
@@ -67,7 +66,7 @@ jobs:
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
