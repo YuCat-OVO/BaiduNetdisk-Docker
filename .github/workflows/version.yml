@@ -1,0 +1,40 @@
+name: Get BaiduNetdisk Version
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 0"
+
+jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set variables
+        id: set-vars
+        run: |
+          RELEASE_NAME="Released on $(date +%Y%m%d%H%M)"
+
+          echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+
+      - name: Run Script
+        run: |
+          pip install -r requirements.txt
+          python get_version.py
+
+      - name: Git push assets to "main" branch
+        run: |
+          if ! ([ -f "info.json" ] && [ -f "url.json" ]); then exit 1; else mkdir info; mv {info,url}.json info; cd info; fi
+          git init
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b info
+          git add .
+          git commit -m "${{ steps.set-vars.outputs.RELEASE_NAME }}"
+          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git push -f -u origin info

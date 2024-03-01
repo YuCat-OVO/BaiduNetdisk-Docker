@@ -1,7 +1,8 @@
-import requests
-import re
 import json
+import re
 import time
+
+import requests
 from lxml import etree
 
 GLOBAL_HEADER = {
@@ -16,7 +17,7 @@ max_version = [4, 20, 0]
 GLOBAL_REQUEST_DELAY = 0.5
 
 
-def get_js_url():
+def get_js_url() -> str:
     """请求百度网盘下载页,获取存在下载链接的js文件"""
     r = requests.get(
         "https://pan.baidu.com/download",
@@ -36,14 +37,18 @@ def get_js_url():
 def append_json(json_file_name: str, add):
     """为Json添加并且去重"""
     file = None
-    with open(json_file_name, "r") as f:
-        file = json.load(f)
-    # print("file=", file)
+    try:
+        with open(json_file_name, "r") as f:
+            file = json.load(f)
+        # print("file=", file)
 
-    u_file = []
-    for i in file:
-        if i not in u_file:
-            u_file.append(i)
+        u_file = []
+        for i in file:
+            if i not in u_file:
+                u_file.append(i)
+
+    except FileNotFoundError:
+        file = json.loads("[]")
 
     u_file.append(add)
 
@@ -54,10 +59,13 @@ def append_json(json_file_name: str, add):
     return
 
 
-def parse_url_from_json():
+def parse_url_from_json() -> list:
     l = ""
-    with open("url.json", "r") as f:
-        l = json.load(f)
+    try:
+        with open("url.json", "r") as f:
+            l = json.load(f)
+    except FileNotFoundError:
+        l = []
     return l
 
 
@@ -87,7 +95,6 @@ def parse_url_from_js():
 
     with open("url.json", "w") as f:
         f.write(json.dumps(u_url, sort_keys=True, indent=4))
-
     return
 
 
@@ -114,23 +121,28 @@ def make_info_json(urls: list):
 
 def make_url_temple():
     l = ""
-    with open("url.json", "r") as f:
-        l = json.load(f)
-    url = ""
-    for i in l:
-        if re.search("amd64", i) != None and re.search("deb", i) != None:
-            url = i
-            break
-    # print(url)
-    url = re.sub("amd64", "arm64", url)
-    url = re.sub("(?<=[_/])((?:[0-9]{1,2}(?:\\.)?){1,3})(?=[_/])", "{0}", url)
-    # print(url)
-    return url
+    url_temple = ""
+    try:
+        with open("url.json", "r") as f:
+            l = json.load(f)
+        for i in l:
+            if re.search("amd64", i) != None and re.search("deb", i) != None:
+                url_temple = re.sub("amd64", "arm64", i)
+                url_temple = re.sub(
+                    "(?<=[_/])((?:[0-9]{1,2}(?:\\.)?){1,3})(?=[_/])", "{0}", url_temple
+                )
+                break
+        # print(url_temple)
+    except FileNotFoundError:
+        url_temple = "https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/{0}/baidunetdisk_{0}_arm64.deb"
+    # print(url_temple)
+    return url_temple
 
 
 def check_version(version):
     """检测指定版本号是否可用"""
     url = make_url_temple().format(".".join(str(v) for v in version))
+    # url = "https://httpbin.org/status/200"
     print("Getting {0}".format(url))
     response = requests.get(
         url,
