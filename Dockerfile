@@ -33,10 +33,11 @@ RUN \
     fonts-wqy-zenhei \
     desktop-file-utils && \
     echo "**** install BaiduNetdisk ****" && \
+    echo "**** BAIDUNETDISK_URL: ${BAIDUNETDISK_URL} ****" && \
     if [ -z ${BAIDUNETDISK_URL+x} ]; then \
     BAIDUNETDISK_URL="https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_amd64.deb"; \
     fi && \
-    echo "***** Getting $BAIDUNETDISK_URL ****" && \
+    echo "***** Getting ${BAIDUNETDISK_URL} ****" && \
     curl -o \
     /tmp/baidunetdisk.deb -L \
     "$BAIDUNETDISK_URL" && \

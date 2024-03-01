@@ -27,8 +27,8 @@ jobs:
         id: set-vars
         run: |
           VERSION="1.0.1"
-          BAIDUNETDISK_VERSION=$(jq -r '.[2] | "\(.arch)"' info.json)
-          BAIDUNETDISK_URL=$(jq -r '.[2] | "\(.url)"' info.json)
+          BAIDUNETDISK_VERSION=$(jq -r '.[1] | "\(.arch)"' info.json)
+          BAIDUNETDISK_URL=$(jq -r '.[1] | "\(.url)"' info.json)
           GITHUB_REF=${{ github.ref }}
           BRACH=${GITHUB_REF#refs/heads/}
           DATE=$(date '+%Y-%m-%dT%H:%M:%S%Z')
