@@ -10,6 +10,7 @@ on:
       - '.github/**'
       - 'docs/**'
       - 'README.md'
+      - 'get_version.py'
 
 env:
   REGISTRY: ghcr.io

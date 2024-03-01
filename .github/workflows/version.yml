@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 3 * * 0"
+  push:
+    branches:
+      - "main"
+    paths:
+      - 'get_version.py'
 
 jobs:
   get-version:
