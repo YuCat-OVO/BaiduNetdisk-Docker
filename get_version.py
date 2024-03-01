@@ -25,18 +25,31 @@ GLOBAL_REQUEST_DELAY = 0.5
 
 def get_js_url() -> str:
     """请求百度网盘下载页,获取存在下载链接的js文件"""
-    r = requests.get(
-        "https://pan.baidu.com/download",
-        headers=GLOBAL_HEADER,
-    )
-    e = etree.HTML(r.text, parser=None)
-    url = ""
+    max_attempts = 5
+    attempt = 0
 
-    # 获取包含链接的js文件
-    for i in e.xpath("//script/@src"):
-        if re.search("https:\\/\\/.*chunk-common.*\\.js", i):
-            url = i
-    # print(url)
+    url = ""
+    while attempt < max_attempts:
+        try:
+            r = requests.get(
+                "https://pan.baidu.com/download",
+                headers=GLOBAL_HEADER,
+            )
+            e = etree.HTML(r.text, parser=None)
+
+            # 获取包含链接的js文件
+            for i in e.xpath("//script/@src"):
+                if re.search("https:\\/\\/.*chunk-common.*\\.js", i):
+                    url = i
+            # print(url)
+            return url
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            attempt += 1
+            time.sleep(1)  # 等待1秒再重试
+
+    if attempt == max_attempts:
+        print("Failed after several attempts")
     return url
 
 
@@ -79,28 +92,41 @@ def parse_url_from_js():
     """从js文件中提取下载的链接并且去重,写入文件"""
     url = get_js_url()
     u_url = []
-    try:
-        d_url = ""
-        r = requests.get(
-            url,
-            headers=GLOBAL_HEADER,
-        )
-        # 过滤链接
-        d_url = re.findall(
-            '(?:link|url(?:_[0-9])?):"https://[a-zA-Z/\\.]*?/netdisk/[a-zA-Z10-9/\\._-]*?(?=")',
-            r.text,
-        )
 
-        # 清理
-        for i in range(len(d_url)):
-            d_url[i] = re.sub('(link|url(?:_[0-9])?):"', "", d_url[i])
+    max_attempts = 5
+    attempt = 0
 
-        # 去重
-        for i in d_url:
-            if i not in u_url:
-                u_url.append(i)
-    except Exception as e:
-        print(e)
+    while attempt < max_attempts:
+        try:
+
+            d_url = ""
+            r = requests.get(
+                url,
+                headers=GLOBAL_HEADER,
+            )
+            # 过滤链接
+            d_url = re.findall(
+                '(?:link|url(?:_[0-9])?):"https://[a-zA-Z/\\.]*?/netdisk/[a-zA-Z10-9/\\._-]*?(?=")',
+                r.text,
+            )
+
+            # 清理
+            for i in range(len(d_url)):
+                d_url[i] = re.sub('(link|url(?:_[0-9])?):"', "", d_url[i])
+
+            # 去重
+            for i in d_url:
+                if i not in u_url:
+                    u_url.append(i)
+
+            break
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            attempt += 1
+            time.sleep(1)  # 等待1秒再重试
+
+    if attempt == max_attempts:
+        print("Failed after several attempts,set url to default")
         u_url = GLOBAL_VERSION
 
     with open("url.json", "w") as f:
@@ -175,6 +201,8 @@ def check_version(version):
 
     if attempt == max_attempts:
         print("Failed after several attempts")
+
+    return
 
 
 def find_latest_version(min_version, max_version):
