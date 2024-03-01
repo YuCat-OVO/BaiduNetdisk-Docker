@@ -34,8 +34,6 @@ RUN \
     echo "**** install BaiduNetdisk ****" && \
     if [ -z ${BAIDUNETDISK_VERSION+x} ]; then \
     BAIDUNETDISK_URL="https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_amd64.deb"; \
-    else \
-    BAIDUNETDISK_URL="https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/${BAIDUNETDISK_VERSION}/baidunetdisk_${BAIDUNETDISK_VERSION}_amd64.deb"; \
     fi && \
     echo "***** Getting $BAIDUNETDISK_URL ****" && \
     curl -o \
@@ -44,6 +42,10 @@ RUN \
     for i in \
     $(dpkg -I /tmp/baidunetdisk.deb | grep "Depends" | cut -c11- | awk -F ', ' '{ for(i=1; i<=NF; i++) print $i }'); \
     do \
+    if [ -z "$(dpkg -l | grep ^ii | grep $i)" ]; \
+    then \ 
+    echo "${i} installed,skip"; \
+    else \
     apt-get install -y --no-install-recommends ${i}; \
     done && \
     dpkg -i /tmp/baidunetdisk.deb && \
