@@ -6,6 +6,7 @@ FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm
 ARG BUILD_DATE
 ARG VERSION
 ARG BAIDUNETDISK_VERSION
+ARG BAIDUNETDISK_URL
 LABEL build_version="version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="YuCat-OVO"
 
@@ -32,7 +33,7 @@ RUN \
     fonts-wqy-zenhei \
     desktop-file-utils && \
     echo "**** install BaiduNetdisk ****" && \
-    if [ -z ${BAIDUNETDISK_VERSION+x} ]; then \
+    if [ -z ${BAIDUNETDISK_URL+x} ]; then \
     BAIDUNETDISK_URL="https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_amd64.deb"; \
     fi && \
     echo "***** Getting $BAIDUNETDISK_URL ****" && \
@@ -42,7 +43,7 @@ RUN \
     for i in \
     $(dpkg -I /tmp/baidunetdisk.deb | grep "Depends" | cut -c11- | awk -F ', ' '{ for(i=1; i<=NF; i++) print $i }'); \
     do \
-    if [ -z "$(dpkg -l | grep ^ii | grep $i)" ]; \
+    if [ -n "$(dpkg -l | grep ^ii | grep $i)" ]; \
     then \ 
     echo "${i} installed,skip"; \
     else \
