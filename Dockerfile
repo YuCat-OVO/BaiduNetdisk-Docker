@@ -47,6 +47,7 @@ RUN \
     echo "${i} installed,skip"; \
     else \
     apt-get install -y --no-install-recommends ${i}; \
+    fi \
     done && \
     dpkg -i /tmp/baidunetdisk.deb && \
     echo "**** cleanup ****" && \
