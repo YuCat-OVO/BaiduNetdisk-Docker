@@ -11,12 +11,11 @@ GLOBAL_HEADER = {
 
 # 截至2024-03-01最新的版本
 GLOBAL_VERSION = [
-    "https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.11.5/baidunetdisk-4.11.5.x86_64.rpm",
     "https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.11.5/baidunetdisk_4.11.5_amd64.deb",
 ]
 
 # 定义需要检测的版本号范围
-max_version = [4, 18, 0]
+max_version = [4, 20, 0]
 min_version = [4, 17, 0]
 
 # 定义请求延时时间（秒）
@@ -54,27 +53,22 @@ def get_js_url() -> str:
 
 
 def append_json(json_file_name: str, add):
-    """为Json添加并且去重"""
+    """为Json添加元素"""
     file = None
     try:
         with open(json_file_name, "r") as f:
             file = json.load(f)
         # print("file=", file)
 
-        u_file = []
-        for i in file:
-            if i not in u_file:
-                u_file.append(i)
-
     except FileNotFoundError:
-        file = json.loads("[]")
+        file = json.loads("")
 
-    u_file.append(add)
+    file.append(add)
 
     # print("ufile=", u_file)
 
     with open(json_file_name, "w") as f:
-        f.write(json.dumps(u_file, sort_keys=True, indent=4))
+        f.write(json.dumps(file, sort_keys=True, indent=4))
     return
 
 
@@ -89,7 +83,7 @@ def parse_url_from_json() -> list:
 
 
 def parse_url_from_js():
-    """从js文件中提取下载的链接并且去重,写入文件"""
+    """从js文件中提取下载的链接并且去重,写入文件 url.json"""
     url = get_js_url()
     u_url = []
 
@@ -155,7 +149,8 @@ def make_info_json(urls: list):
     return
 
 
-def make_url_temple():
+def make_url_temple(arch: str):
+    """按照之前所获取的 url.json,创建模板"""
     l = ""
     url_temple = ""
     try:
@@ -163,7 +158,7 @@ def make_url_temple():
             l = json.load(f)
         for i in l:
             if re.search("amd64", i) != None and re.search("deb", i) != None:
-                url_temple = re.sub("amd64", "arm64", i)
+                url_temple = re.sub("amd64", arch, i)
                 url_temple = re.sub(
                     "(?<=[_/])((?:[0-9]{1,2}(?:\\.)?){1,3})(?=[_/])", "{0}", url_temple
                 )
@@ -175,9 +170,9 @@ def make_url_temple():
     return url_temple
 
 
-def check_version(version):
+def check_version(version: list, arch: str):
     """检测指定版本号是否可用"""
-    url = make_url_temple().format(".".join(str(v) for v in version))
+    url = make_url_temple(arch).format(".".join(str(v) for v in version))
     # url = "https://httpbin.org/status/200"
     # print("Getting {0}".format(url))
 
@@ -215,21 +210,28 @@ def find_latest_version(min_version, max_version):
         if not (x == max_version[0] and y == max_version[1] and z > max_version[2])
         if not (x == min_version[0] and y == min_version[1] and z < min_version[2])
     ]
-    for version in version_list:
-        # 检测指定版本号是否可用
-        if check_version(version):
-            print("version {0} is available".format(".".join(str(v) for v in version)))
-            time.sleep(GLOBAL_REQUEST_DELAY)
-            append_json(
-                "url.json",
-                make_url_temple().format(".".join(str(v) for v in version)),
-            )
-            return version
-        else:
-            # print(
-            #     "version {0} is not available".format(".".join(str(v) for v in version))
-            # )
-            time.sleep(GLOBAL_REQUEST_DELAY)
+    for arch in ["amd64", "arm64"]:
+        for version in version_list:
+            # 检测指定版本号是否可用
+            if check_version(version, arch):
+                print(
+                    "arch {0} version {1} is available".format(
+                        arch, ".".join(str(v) for v in version)
+                    )
+                )
+                append_json(
+                    "url.json",
+                    make_url_temple(arch).format(".".join(str(v) for v in version)),
+                )
+                time.sleep(GLOBAL_REQUEST_DELAY)
+                break
+            else:
+                print(
+                    "arch {0} version {1} is not available".format(
+                        arch, ".".join(str(v) for v in version)
+                    )
+                )
+                time.sleep(GLOBAL_REQUEST_DELAY)
 
     # 找不到可用版本号，返回None
     return None
