@@ -38,7 +38,7 @@ jobs:
           echo "GITHUB_REF=${GITHUB_REF}" >> $GITHUB_OUTPUT
           echo "BRACH=${BRACH}" >> $GITHUB_OUTPUT
           echo "DATE=${DATE}" >> $GITHUB_OUTPUT
-          echo "PLATFORM_PAIR=${PLATFORM_PAIR}" >> $GITHUB_ENV
+          echo "PLATFORM_PAIR=${PLATFORM_PAIR}" >> $GITHUB_OUTPUT
 
       - name: Docker Meta
         id: meta
