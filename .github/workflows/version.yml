@@ -35,7 +35,7 @@ jobs:
           pip install -r requirements.txt
           python get_version.py
 
-      - name: Git push assets to "info" branch
+      - name: Git push assets to branch
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"

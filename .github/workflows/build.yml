@@ -97,22 +97,6 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      # - name: Buildx
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: Dockerfile
-      #     platforms: |
-      #       ${{ matrix.arch }}
-      #     push: true
-      #     build-args: |
-      #       BUILD_DATE=${{ steps.set-vars.outputs.DATE }}
-      #       VERSION=${{ steps.set-vars.outputs.VERSION }}
-      #       BAIDUNETDISK_VERSION=${{ steps.set-vars.outputs.BAIDUNETDISK_VERSION }}
-      #       BAIDUNETDISK_URL=${{ steps.set-vars.outputs.BAIDUNETDISK_URL }}
-      #     labels: ${{ steps.meta.outputs.labels }}
-      #     tags: ${{ steps.meta.outputs.tags }}
-
   Merge:
     runs-on: ubuntu-latest
     needs:
