@@ -12,7 +12,7 @@ on:
       - "get_version.py"
 
 env:
-  IMAGE_NAME: BaiduNetdisk-Docker
+  IMAGE_NAME: baidunetdisk-docker
 
 jobs:
   Build:
