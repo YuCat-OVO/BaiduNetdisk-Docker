@@ -35,11 +35,11 @@ RUN \
     fonts-wqy-zenhei \
     desktop-file-utils && \
     echo "**** install BaiduNetdisk ****" && \
-    if [ "${TARGETPLATFORM}" == "linux/amd64" ]; then \
+    if [ "${TARGETPLATFORM}" = "linux/amd64" ]; then \
     echo "**** ${TARGETPLATFORM}, reading from url.json ****"; \
     BAIDUNETDISK_VERSION=$(jq -r ".[-2]" /tmp/url.json); \
     BAIDUNETDISK_URL=$(jq -r ".[-2]" /tmp/url.json); \
-    elif [ "${TARGETPLATFORM}" == "linux/arm64" ]; then \
+    elif [ "${TARGETPLATFORM}" = "linux/arm64" ]; then \
     echo "**** ${TARGETPLATFORM}, reading from url.json ****"; \
     BAIDUNETDISK_VERSION=$(jq -r ".[-1]" /tmp/url.json); \
     BAIDUNETDISK_URL=$(jq -r ".[-1]" /tmp/url.json); \
