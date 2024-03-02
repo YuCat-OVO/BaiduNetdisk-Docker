@@ -31,13 +31,14 @@ jobs:
           GITHUB_REF=${{ github.ref }}
           BRACH=${GITHUB_REF#refs/heads/}
           DATE=$(date '+%Y-%m-%dT%H:%M:%S%Z')
-          PLATFORM_PAIR=${{ matrix.arch }}
+          ARCH=${{ matrix.arch }}
+          PLATFORM_PAIR=${ARCH//\//-}
 
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
           echo "GITHUB_REF=${GITHUB_REF}" >> $GITHUB_OUTPUT
           echo "BRACH=${BRACH}" >> $GITHUB_OUTPUT
           echo "DATE=${DATE}" >> $GITHUB_OUTPUT
-          echo "PLATFORM_PAIR=${PLATFORM_PAIR//\//-}" >> $GITHUB_ENV
+          echo "PLATFORM_PAIR=${PLATFORM_PAIR}" >> $GITHUB_ENV
 
       - name: Docker Meta
         id: meta
