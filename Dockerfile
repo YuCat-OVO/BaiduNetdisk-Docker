@@ -16,11 +16,11 @@ ENV \
     HOME="/config" \
     TITLE="Baidunetdisk"
 
-COPY info.json /tmp/
+COPY url.json /tmp/
 
 RUN \
-    TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64} &&\
-    echo "**** arch: ${TARGETPLATFORM} ****" &&\
+    TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64} && \
+    echo "**** arch: ${TARGETPLATFORM} ****" && \
     echo "**** add icon ****" && \
     curl -o \
     /kclient/public/icon.png \
@@ -35,13 +35,16 @@ RUN \
     fonts-wqy-zenhei \
     desktop-file-utils && \
     echo "**** install BaiduNetdisk ****" && \
-    if [ ${TARGETPLATFORM} == linux/amd64 ]; then \
-    BAIDUNETDISK_VERSION=$(jq -r '.[1] | "\(.version)"' /tmp/info.json); \
-    BAIDUNETDISK_URL=$(jq -r '.[1] | "\(.url)"' /tmp/info.json); \
-    elif [ ${TARGETPLATFORM} == linux/arm64 ]; then \
-    BAIDUNETDISK_VERSION=$(jq -r '.[2] | "\(.version)"' /tmp/info.json); \ 
-    BAIDUNETDISK_URL=$(jq -r '.[2] | "\(.url)"' /tmp/info.json); \
+    if [ "${TARGETPLATFORM}" == "linux/amd64" ]; then \
+    echo "**** ${TARGETPLATFORM}, reading from url.json ****"; \
+    BAIDUNETDISK_VERSION=$(jq -r ".[-2]" /tmp/url.json); \
+    BAIDUNETDISK_URL=$(jq -r ".[-2]" /tmp/url.json); \
+    elif [ "${TARGETPLATFORM}" == "linux/arm64" ]; then \
+    echo "**** ${TARGETPLATFORM}, reading from url.json ****"; \
+    BAIDUNETDISK_VERSION=$(jq -r ".[-1]" /tmp/url.json); \
+    BAIDUNETDISK_URL=$(jq -r ".[-1]" /tmp/url.json); \
     else \
+    echo "**** err, use default url ****" && \
     BAIDUNETDISK_URL="https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_amd64.deb"; \
     fi && \
     echo "***** Getting ${BAIDUNETDISK_URL} ****" && \
