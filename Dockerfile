@@ -11,7 +11,6 @@ LABEL maintainer="YuCat-OVO"
 LABEL org.opencontainers.image.source="https://github.com/linuxserver/docker-baseimage-kasmvnc"
 
 ENV \
-    TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64} \
     CUSTOM_PORT="8080" \
     CUSTOM_HTTPS_PORT="8181" \
     HOME="/config" \
@@ -20,6 +19,8 @@ ENV \
 COPY info.json /tmp/
 
 RUN \
+    TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64} &&\
+    echo "**** arch: ${TARGETPLATFORM} ****" &&\
     echo "**** add icon ****" && \
     curl -o \
     /kclient/public/icon.png \
