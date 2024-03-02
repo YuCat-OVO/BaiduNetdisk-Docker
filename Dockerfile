@@ -5,18 +5,19 @@ FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm
 # set version label
 ARG BUILD_DATE
 ARG VERSION
-ARG BAIDUNETDISK_VERSION
-ARG BAIDUNETDISK_URL
+ARG TARGETPLATFORM
 LABEL build_version="version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="YuCat-OVO"
-
-# https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_amd64.deb
+LABEL org.opencontainers.image.source="https://github.com/linuxserver/docker-baseimage-kasmvnc"
 
 ENV \
+    TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64} \
     CUSTOM_PORT="8080" \
     CUSTOM_HTTPS_PORT="8181" \
     HOME="/config" \
     TITLE="Baidunetdisk"
+
+COPY info.json /tmp/
 
 RUN \
     echo "**** add icon ****" && \
@@ -33,8 +34,13 @@ RUN \
     fonts-wqy-zenhei \
     desktop-file-utils && \
     echo "**** install BaiduNetdisk ****" && \
-    echo "**** BAIDUNETDISK_URL: ${BAIDUNETDISK_URL} ****" && \
-    if [ -z ${BAIDUNETDISK_URL+x} ]; then \
+    if [ ${TARGETPLATFORM} == "linux/amd64" ]; then \
+    BAIDUNETDISK_VERSION=$(jq -r '.[1] | "\(.version)"' /tmp/info.json); \
+    BAIDUNETDISK_URL=$(jq -r '.[1] | "\(.url)"' /tmp/info.json); \
+    elif [ ${TARGETPLATFORM} == "linux/arm64" ]; then \
+    BAIDUNETDISK_VERSION=$(jq -r '.[2] | "\(.version)"' /tmp/info.json); \ 
+    BAIDUNETDISK_URL=$(jq -r '.[2] | "\(.url)"' /tmp/info.json); \
+    else \
     BAIDUNETDISK_URL="https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_amd64.deb"; \
     fi && \
     echo "***** Getting ${BAIDUNETDISK_URL} ****" && \

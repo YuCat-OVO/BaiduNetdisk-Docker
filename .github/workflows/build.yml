@@ -19,7 +19,7 @@ jobs:
     name: Build
     strategy:
       matrix:
-        arch: [amd64, arm64]
+        arch: [linux/amd64, linux/arm64]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,29 +27,18 @@ jobs:
       - name: Set variables
         id: set-vars
         run: |
-          VERSION="1.0.1"
-          if [ ${{ matrix.arch }} == amd64 ]; then
-          BAIDUNETDISK_VERSION=$(jq -r '.[1] | "\(.version)"' info.json);
-          BAIDUNETDISK_URL=$(jq -r '.[1] | "\(.url)"' info.json);
-          fi
-          if [ ${{ matrix.arch }} == arm64 ]; then
-          BAIDUNETDISK_VERSION=$(jq -r '.[2] | "\(.version)"' info.json);
-          BAIDUNETDISK_URL=$(jq -r '.[2] | "\(.url)"' info.json);
-          fi
+          VERSION="1.0.2"
           GITHUB_REF=${{ github.ref }}
           BRACH=${GITHUB_REF#refs/heads/}
           DATE=$(date '+%Y-%m-%dT%H:%M:%S%Z')
 
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
-          echo "BAIDUNETDISK_VERSION=${BAIDUNETDISK_VERSION}" >> $GITHUB_OUTPUT
-          echo "BAIDUNETDISK_URL=${BAIDUNETDISK_URL}" >> $GITHUB_OUTPUT
           echo "GITHUB_REF=${GITHUB_REF}" >> $GITHUB_OUTPUT
           echo "BRACH=${BRACH}" >> $GITHUB_OUTPUT
           echo "DATE=${DATE}" >> $GITHUB_OUTPUT
 
-      - name: Docker Meta (amd64)
-        id: meta-amd
-        if: ${{ matrix.arch }} == amd64
+      - name: Docker Meta
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
@@ -59,19 +48,6 @@ jobs:
             type=raw,value=${{ steps.set-vars.outputs.VERSION }}
             type=raw,value=${{ steps.set-vars.outputs.BRACH }}
             type=raw,value=latest
-
-      - name: Docker Meta (arm64)
-        id: meta-arm
-        if: ${{ matrix.arch }} == arm64
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
-            ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=arm64-${{ steps.set-vars.outputs.VERSION }}
-            type=raw,value=arm64-${{ steps.set-vars.outputs.BRACH }}
-            type=raw,value=arm64-latest
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -92,36 +68,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Buildx (amd64)
-        if: ${{ matrix.arch }} == amd64
+      - name: Buildx
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile
           platforms: |
-            linux/amd64
+            ${{ matrix.arch }}
           push: true
           build-args: |
             BUILD_DATE=${{ steps.set-vars.outputs.DATE }}
             VERSION=${{ steps.set-vars.outputs.VERSION }}
             BAIDUNETDISK_VERSION=${{ steps.set-vars.outputs.BAIDUNETDISK_VERSION }}
             BAIDUNETDISK_URL=${{ steps.set-vars.outputs.BAIDUNETDISK_URL }}
-          labels: ${{ steps.meta-amd.outputs.labels }}
-          tags: ${{ steps.meta-amd.outputs.tags }}
-
-      - name: Buildx (arm64)
-        if: ${{ matrix.arch }} == arm64
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile
-          platforms: |
-            linux/arm64
-          push: true
-          build-args: |
-            BUILD_DATE=${{ steps.set-vars.outputs.DATE }}
-            VERSION=${{ steps.set-vars.outputs.VERSION }}
-            BAIDUNETDISK_VERSION=${{ steps.set-vars.outputs.BAIDUNETDISK_VERSION }}
-            BAIDUNETDISK_URL=${{ steps.set-vars.outputs.BAIDUNETDISK_URL }}
-          labels: ${{ steps.meta-arm.outputs.labels }}
-          tags: ${{ steps.meta-arm.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
