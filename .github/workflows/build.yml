@@ -27,18 +27,20 @@ jobs:
       - name: Set variables
         id: set-vars
         run: |
-          VERSION="1.0.3"
+          VERSION="1.0.4"
           GITHUB_REF=${{ github.ref }}
           BRACH=${GITHUB_REF#refs/heads/}
           DATE=$(date '+%Y-%m-%dT%H:%M:%S%Z')
           ARCH=${{ matrix.arch }}
           PLATFORM_PAIR=${ARCH//\//-}
+          PLATFORM=${ARCH//linux\//}
 
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
           echo "GITHUB_REF=${GITHUB_REF}" >> $GITHUB_OUTPUT
           echo "BRACH=${BRACH}" >> $GITHUB_OUTPUT
           echo "DATE=${DATE}" >> $GITHUB_OUTPUT
           echo "PLATFORM_PAIR=${PLATFORM_PAIR}" >> $GITHUB_OUTPUT
+          echo "PLATFORM=${PLATFORM}" >> $GITHUB_OUTPUT
 
       - name: Docker Meta
         id: meta
@@ -50,6 +52,7 @@ jobs:
           tags: |
             type=raw,value=${{ steps.set-vars.outputs.VERSION }}
             type=raw,value=${{ steps.set-vars.outputs.BRACH }}
+            type=raw,value=${{ steps.set-vars.outputs.PLATFORM }}
             type=raw,value=latest
 
       - name: Set up QEMU

@@ -37,7 +37,7 @@ RUN \
     fi && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get -yy -qq install --no-install-recommends --no-install-suggests --fix-missing \
     wget \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
@@ -84,7 +84,7 @@ RUN \
     then \ 
     echo "${i} installed,skip"; \
     else \
-    apt-get install -y --no-install-recommends ${i}; \
+    apt-get -yy -qq install --no-install-recommends --no-install-suggests --fix-missing ${i}; \
     fi \
     done && \
     dpkg -i /tmp/baidunetdisk.deb && \
