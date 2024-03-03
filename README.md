@@ -39,7 +39,7 @@
 
 ### 无损模式
 
-通过将流质量预设更改为“无损”，该容器能够以高帧速率向您的 Web 浏览器提供真正的无损图像，更多信息请参见[此处](https://www.kasmweb.com/docs/latest/how_to/lossless.html#technical-background)。为了从非 localhost 端点使用此模式，需要使用 8181 上的 HTTPS 端口。如果使用端口 8080 的反向代理，则需要按照[此处](https://github.com/linuxserver/docker-baseimage-kasmvnc#lossless)所述设置特定标头。.
+通过将流质量预设更改为“Extreme”，该容器能够以高帧速率向您的 Web 浏览器提供真正的无损图像，更多信息请参见[此处](https://www.kasmweb.com/docs/latest/how_to/lossless.html#technical-background)。为了从非 localhost 端点使用此模式，需要使用 8181 上的 HTTPS 端口。如果使用端口 8080 的反向代理，则需要按照[此处](https://github.com/linuxserver/docker-baseimage-kasmvnc#lossless)所述设置特定标头。.
 
 ## 如何部署
 
