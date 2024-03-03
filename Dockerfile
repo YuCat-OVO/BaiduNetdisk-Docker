@@ -31,12 +31,32 @@ RUN \
     echo "**** fix trusted.gpg ****" && \
     mv /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/docker.gpg && \
     echo "**** install runtime packages ****" && \
+    if [ -n ${TZ} ]; then \
+    echo "**** TZ not found, setting up ****" && \
+    export TZ=Asia/Shanghai; \
+    fi && \
+    export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
     wget \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
-    desktop-file-utils && \
+    dbus \
+    fcitx-rime \
+    libnss3 \
+    libopengl0 \
+    libxkbcommon-x11-0 \
+    libxcb-cursor0 \
+    libxcb-icccm4 \
+    libxcb-image0 \
+    libxcb-keysyms1 \
+    libxcb-randr0 \
+    libxcb-render-util0 \
+    libxcb-xinerama0 \
+    libxdamage1 \
+    poppler-utils \
+    python3 \
+    python3-xdg && \
     echo "**** install BaiduNetdisk ****" && \
     if [ "${TARGETPLATFORM}" = "linux/amd64" ]; then \
     echo "**** ${TARGETPLATFORM}, reading from url.json ****"; \
