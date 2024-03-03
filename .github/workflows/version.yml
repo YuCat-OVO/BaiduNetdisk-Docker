@@ -40,5 +40,5 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add *.json
-          git commit -m "${{ steps.set-vars.outputs.RELEASE_NAME }}"
-          git push || true
+          git commit -m "${{ steps.set-vars.outputs.RELEASE_NAME }}" || true
+          git push
