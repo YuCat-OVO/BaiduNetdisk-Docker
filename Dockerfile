@@ -18,6 +18,9 @@ ENV \
 
 COPY url.json /tmp/
 
+# add local files
+COPY root/ /
+
 RUN \
     TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64} && \
     echo "**** arch: ${TARGETPLATFORM} ****" && \
@@ -43,6 +46,8 @@ RUN \
     echo "**** ${TARGETPLATFORM}, reading from url.json ****"; \
     BAIDUNETDISK_VERSION=$(jq -r ".[-1]" /tmp/url.json); \
     BAIDUNETDISK_URL=$(jq -r ".[-1]" /tmp/url.json); \
+    echo "**** ${TARGETPLATFORM}, add args ****" && \
+    sed -i "s/baidunetdisk --no-sandbox/baidunetdisk --no-sandbox --disable-gpu-sandbox/g" /defaults/*; \
     else \
     echo "**** err, use default url ****" && \
     BAIDUNETDISK_URL="https://issuepcdn.baidupcs.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_amd64.deb"; \
@@ -68,6 +73,3 @@ RUN \
     /tmp/* \
     /var/lib/apt/lists/* \
     /var/tmp/*
-
-# add local files
-COPY root/ /
