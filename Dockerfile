@@ -56,7 +56,8 @@ RUN \
     libxdamage1 \
     poppler-utils \
     python3 \
-    python3-xdg && \
+    python3-xdg \
+    desktop-file-utils && \
     echo "**** install BaiduNetdisk ****" && \
     if [ "${TARGETPLATFORM}" = "linux/amd64" ]; then \
     echo "**** ${TARGETPLATFORM}, reading from url.json ****"; \
