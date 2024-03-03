@@ -1,6 +1,6 @@
 # BaiduNetdisk-Docker
 
-一款基于 [Linuxserver.io](https://www.linuxserver.io/) 的 [KasmVNC 基础镜像](https://github.com/linuxserver/docker-baseimage-kasmvnc)以及百度网盘官方客户端的 Docker 镜像
+一款基于 [Linuxserver.io](https://www.linuxserver.io/) 的 [KasmVNC 基础镜像](https://github.com/linuxserver/docker-baseimage-kasmvnc)以及百度网盘官方客户端的 Docker 镜像，支持 amd64 和 arm64 架构。
 
 ## 镜像设置
 
