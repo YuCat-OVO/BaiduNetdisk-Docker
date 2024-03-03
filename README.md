@@ -53,7 +53,7 @@
 ---
 services:
   calibre:
-    image: docker.io/yucat-ovo/baidunetdisk-docker:latest
+    image: docker.io/yucatovo/baidunetdisk-docker:latest
     container_name: baidunetdisk
     security_opt:
       - seccomp:unconfined #可选
@@ -90,7 +90,7 @@ docker run -d \
   -v /配置文件位置:/config \
   -v /下载位置:/config/baidunetdiskdownload \
   --restart unless-stopped \
-  docker.io/yucat-ovo/baidunetdisk-docker:latest
+  docker.io/yucatovo/baidunetdisk-docker:latest
 ```
 
 ### Podman 部署:
@@ -109,7 +109,7 @@ podman run -d \
   -v /配置文件位置:/config \
   -v /下载位置:/config/baidunetdiskdownload \
   --restart unless-stopped \
-  docker.io/yucat-ovo/baidunetdisk-docker:latest
+  docker.io/yucatovo/baidunetdisk-docker:latest
 ```
 #### Deployment
 ```shell
@@ -133,7 +133,7 @@ spec:
       restartPolicy: always
       containers:
         - name: baidunetdisk
-          image: docker.io/yucat-ovo/baidunetdisk-docker:latest
+          image: docker.io/yucatovo/baidunetdisk-docker:latest
           volumeMounts:
             - name: config-path
               mountPath: /config/
