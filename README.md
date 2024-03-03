@@ -69,7 +69,6 @@ services:
     ports:
       - 8080:8080
       - 8181:8181
-      - 8081:8081
     restart: unless-stopped
 ```
 
@@ -86,7 +85,6 @@ docker run -d \
   -e CLI_ARGS= `#可选` \
   -p 8080:8080 \
   -p 8181:8181 \
-  -p 8081:8081 \
   -v /配置文件位置:/config \
   -v /下载位置:/config/baidunetdiskdownload \
   --restart unless-stopped \
@@ -163,14 +161,19 @@ spec:
 ```
 
 ## 注意事项
-- 目前 KasmVNC 对于 Firefox 的支持貌似有问题，推荐使用 Chrome 获得最佳体验。
+- 目前 KasmVNC 对于 Firefox 的支持貌似有问题，推荐使用 Chromium 作为核心的浏览器获得最佳体验（比如 KasmVNC 的无缝剪贴板）。
 - Podman 如果需要启用硬件加速，可能需要往 `/etc/containers/containers.conf.d/` 添加配置（详见：[containers.conf.5](https://github.com/containers/common/blob/main/docs/containers.conf.5.md)）：
 ```
  [containers]
  devices = ["/dev/dri/card1:rwm","/dev/dri/renderD128:rwm"]
  ```
+- 如果遇到 `Failed to close file descriptor for child process (Operation not permitted)` 的错误，请使用 `--security-opt seccomp=unconfined` 启动（[来源](https://gist.github.com/nathabonfim59/b088db8752673e1e7acace8806390242)），可能会有安全问题。
+- Linuxserver.io 镜像不设置 `PUID` 和 `PGID` 变量的时候会默认使用 `911` 作为运行用户和组 ID，请确认用户权限正确。
 
-## 感谢以下项目:
+## 感谢以下项目：
 - [KasmVNC Base Images from LinuxServer](https://github.com/linuxserver/docker-baseimage-kasmvnc)
 - [eMUQI/baidunetdisk-arm64-vnc](https://github.com/eMUQI/baidunetdisk-arm64-vnc)
 - [gshang2017/docker](https://github.com/gshang2017/docker)
+
+## 其他
+同时也感谢参与反馈与测试的所有人
