@@ -13,7 +13,7 @@ on:
 
 env:
   IMAGE_NAME: baidunetdisk-docker
-  DOCKERHUB_SLUG: crazymax/linguist
+  DOCKERHUB_SLUG: yucatovo/baidunetdisk-docker
   GHCR_SLUG: ghcr.io/yucat-ovo/baidunetdisk-docker
 
 jobs:
