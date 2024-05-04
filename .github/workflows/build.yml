@@ -8,22 +8,29 @@ on:
     paths-ignore:
       - ".github/**"
       - "docs/**"
-      - "README.md"
+      - "**.md"
       - "get_version.py"
 
 env:
   IMAGE_NAME: baidunetdisk-docker
+  DOCKERHUB_SLUG: crazymax/linguist
+  GHCR_SLUG: ghcr.io/yucat-ovo/baidunetdisk-docker
 
 jobs:
   Build:
     name: Build
-    strategy:
-      matrix:
-        arch: [linux/amd64, linux/arm64]
+    outputs:
+      matrix: ${{ steps.platforms.outputs.matrix }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@master
+
+      - name: Create matrix
+        id: platforms
+        run: |
+          echo "matrix=$(docker buildx bake image-all --print | jq -cr '.target."image-all".platforms')" >>${GITHUB_OUTPUT}
+
       - name: Set variables
         id: set-vars
         run: |
