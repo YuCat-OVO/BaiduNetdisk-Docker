@@ -7,9 +7,9 @@ on:
       - "main"
       - "develop"
     paths-ignore:
-      - ".github/**"
       - "docs/**"
       - "**.md"
+
 env:
   BUILD_TAG: baidunetdisk-docker:test
 
@@ -41,7 +41,7 @@ jobs:
         uses: docker/bake-action@v4
         with:
           targets: ${{ steps.set-vars.outputs.TARGET }}
-        env: 
+        env:
           TAG: ${{ env.BUILD_TAG }}
 
       - name: Test
