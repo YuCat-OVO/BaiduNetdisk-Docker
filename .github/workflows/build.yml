@@ -130,7 +130,6 @@ jobs:
         if: ${{ matrix.platform }} == "linux/amd64"
         run: |
           mkdir -p /tmp/digests
-          if
           digest="${{ fromJSON(steps.bake.outputs.metadata).image-amd64['containerimage.digest'] }}"
           touch "/tmp/digests/${digest#sha256:}"
 
@@ -138,7 +137,6 @@ jobs:
         if: ${{ matrix.platform }} == "linux/arm64"
         run: |
           mkdir -p /tmp/digests
-          if
           digest="${{ fromJSON(steps.bake.outputs.metadata).image-arm64['containerimage.digest'] }}"
           touch "/tmp/digests/${digest#sha256:}"
 
