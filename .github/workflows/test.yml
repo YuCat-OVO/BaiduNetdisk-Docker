@@ -56,4 +56,5 @@ jobs:
 
       - name: Test
         run: |
-          docker run -t --rm --platform "${{ matrix.platform }}" "${{ env.BUILD_TAG }}-${{ steps.set-vars.outputs.TARGET }}" /usr/bin/mytest
+          uname -m
+          docker run --rm "${{ env.BUILD_TAG }}-${{ steps.set-vars.outputs.TARGET }}" /usr/bin/mytest
