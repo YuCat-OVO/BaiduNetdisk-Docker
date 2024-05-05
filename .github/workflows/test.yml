@@ -32,8 +32,9 @@ jobs:
       - name: Set the value
         id: set-vars
         run: |
-          echo "TARGET=$(echo ${{ matrix.platform }} | sed 's#/#-#g')" >> "$GITHUB_OUTPUT"
-          echo "ARCH=$(echo ${{ matrix.platform }} | sed 's#linux/##g')" >> "$GITHUB_OUTPUT"
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> "$GITHUB_ENV"
+          echo "ARCH=${platform//linux\//}" >> "$GITHUB_ENV"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -48,9 +49,9 @@ jobs:
         uses: docker/bake-action@v4
         with:
           push: true
-          targets: ${{ steps.set-vars.outputs.TARGET }}
+          targets: ${{ env.TARGET }}
         env:
-          DEFAULT_TAG: ${{ env.BUILD_TAG }}-${{ steps.set-vars.outputs.TARGET }}
+          DEFAULT_TAG: ${{ env.BUILD_TAG }}-${{ env.PLATFORM_PAIR }}
 
       - name: Test
         run: |
