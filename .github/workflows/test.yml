@@ -49,8 +49,8 @@ jobs:
           push: true
           targets: ${{ steps.set-vars.outputs.TARGET }}
         env:
-          TAG: ${{ env.BUILD_TAG }}
+          TAG: ${{ env.BUILD_TAG }}-${{ steps.set-vars.outputs.TARGET }}
 
       - name: Test
         run: |
-          docker run -t --rm ${{ env.BUILD_TAG }}
+          docker run -t --rm "${{ env.BUILD_TAG }}-${{ steps.set-vars.outputs.TARGET }}" /usr/bin/mytest

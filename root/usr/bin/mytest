@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+sudo -u root -s /bin/bash -c "/opt/baidunetdisk/baidunetdisk --no-sandbox" > /tmp/baidunetdisk_output.txt 2>&1 &
+sleep 15
+
+echo -e '\033[0;31m'
+cat /tmp/baidunetdisk_output.txt
+echo -e '\033[0m'
