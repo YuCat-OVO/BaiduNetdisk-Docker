@@ -33,15 +33,17 @@ jobs:
         id: set-vars
         run: |
           echo "TARGET=$(echo ${{ matrix.platform }} | sed 's#/#-#g')" >> "$GITHUB_OUTPUT"
+          echo "ARCH=$(echo ${{ matrix.platform }} | sed 's#linux/##g')" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        with: ${{ steps.set-vars.outputs.ARCH }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
           driver-opts: network=host
-          platform: ${{ matrix.platform }}
+          platforms: ${{ matrix.platform }}
 
       - name: Build
         uses: docker/bake-action@v4
