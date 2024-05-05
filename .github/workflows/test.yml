@@ -44,7 +44,7 @@ jobs:
         with:
           targets: ${{ steps.set-vars.outputs.TARGET }}
         env: 
-          DEFAULT_TAG: ${{ env.BUILD_TAG }}
+          TAG: ${{ env.BUILD_TAG }}
 
       - name: Test
         run: |
