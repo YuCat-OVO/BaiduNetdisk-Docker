@@ -1,178 +1,84 @@
 name: Build & Release
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: false
+        type: string
   push:
     branches:
       - "main"
-    tags:
-    - "[0-9]+.[0-9]+.[0-9]+"
+      - "develop"
     paths-ignore:
-      - ".github/**"
       - "docs/**"
       - "**.md"
 
 env:
-  IMAGE_NAME: baidunetdisk-docker
   DOCKERHUB_SLUG: docker.io/yucatovo/baidunetdisk-docker
   GHCR_SLUG: ghcr.io/yucat-ovo/baidunetdisk-docker
 
 jobs:
-  Build:
-    name: Build
-    outputs:
-      matrix: ${{ steps.platforms.outputs.matrix }}
+  prepare:
+    name: prepare
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["linux/amd64", "linux/arm64"]
+
     steps:
       - name: Checkout
         uses: actions/checkout@master
 
-      - name: Create matrix
-        id: platforms
-        run: |
-          echo "matrix=$(docker buildx bake image-all --print | jq -cr '.target."image-all".platforms')" >>${GITHUB_OUTPUT}
-
       - name: Set variables
         id: set-vars
         run: |
-          VERSION="1.0.4"
-          GITHUB_REF=${{ github.ref }}
-          BRACH=${GITHUB_REF#refs/heads/}
-          DATE=$(date '+%Y-%m-%dT%H:%M:%S%Z')
-          ARCH=${{ matrix.arch }}
-          PLATFORM_PAIR=${ARCH//\//-}
-          PLATFORM=${ARCH//linux\//}
-
-          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
-          echo "GITHUB_REF=${GITHUB_REF}" >> $GITHUB_OUTPUT
-          echo "BRACH=${BRACH}" >> $GITHUB_OUTPUT
-          echo "DATE=${DATE}" >> $GITHUB_OUTPUT
-          echo "PLATFORM_PAIR=${PLATFORM_PAIR}" >> $GITHUB_OUTPUT
-          echo "PLATFORM=${PLATFORM}" >> $GITHUB_OUTPUT
+          echo "TARGET=$(echo ${{ matrix.platform }} | sed 's#/#-#g')" >> "$GITHUB_OUTPUT"
+          echo "ARCH=$(echo ${{ matrix.platform }} | sed 's#linux/##g')" >> "$GITHUB_OUTPUT"
 
       - name: Docker Meta
-        id: meta
         uses: docker/metadata-action@v5
+        id: meta
         with:
           images: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
-            ghcr.io/${{ github.repository }}
+            ${{ env.DOCKERHUB_SLUG }}
+            ${{ env.GHCR_SLUG }}
           tags: |
-            type=raw,value=${{ steps.set-vars.outputs.VERSION }}
-            type=raw,value=${{ steps.set-vars.outputs.BRACH }}
-            type=raw,value=${{ steps.set-vars.outputs.PLATFORM }}
-            type=raw,value=latest
+            type=ref,event=branch,prefix=br-,enable=${{ github.ref_name != github.event.repository.default_branch }}
+            type=edge,branch=develop,prefix=edge-
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=sha
+          labels: |
+            org.opencontainers.image.title=BaiduNetdisk-Docker
+            org.opencontainers.image.description=A BaiduNetdisk image base on Linuxserver.io's KasmVNC image.
+            org.opencontainers.image.vendor=YuCat-OVO
+
+      - name: Rename meta bake definition file
+        run: |
+          mv "${{ steps.meta.outputs.bake-file }}" "/tmp/bake-meta.json"
+
+      - name: Print meta bake definition file
+        run: |
+          cat "/tmp/bake-meta.json"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          platforms: ${{ matrix.platform }}
 
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push by digest
-        id: build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: ${{ matrix.arch }}
-          build-args: |
-            BUILD_DATE=${{ steps.set-vars.outputs.DATE }}
-            VERSION=${{ steps.set-vars.outputs.VERSION }}
-          labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
-
-      - name: Export digest
-        run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
-
-      - name: Upload digest
+      - name: Upload meta bake definition
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ steps.set-vars.outputs.PLATFORM_PAIR }}
-          path: /tmp/digests/*
+          name: bake-meta-${{ steps.set-vars.outputs.ARCH }}
+          path: /tmp/bake-meta.json
           if-no-files-found: error
           retention-days: 1
-
-  Merge:
-    runs-on: ubuntu-latest
-    needs:
-      - Build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@master
-      - name: Set variables
-        id: set-vars
-        run: |
-          VERSION="1.0.3"
-          GITHUB_REF=${{ github.ref }}
-          BRACH=${GITHUB_REF#refs/heads/}
-          DATE=$(date '+%Y-%m-%dT%H:%M:%S%Z')
-          ACTOR=${{ github.actor }}
-
-          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
-          echo "GITHUB_REF=${GITHUB_REF}" >> $GITHUB_OUTPUT
-          echo "BRACH=${BRACH}" >> $GITHUB_OUTPUT
-          echo "DATE=${DATE}" >> $GITHUB_OUTPUT
-          echo "ACTOR=${ACTOR,,}" >> $GITHUB_OUTPUT
-
-      - name: Download digests
-        uses: actions/download-artifact@v4
-        with:
-          path: /tmp/digests
-          pattern: digests-*
-          merge-multiple: true
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Docker Meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
-            ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=${{ steps.set-vars.outputs.VERSION }}
-            type=raw,value=${{ steps.set-vars.outputs.BRACH }}
-            type=raw,value=latest
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create manifest list and push
-        working-directory: /tmp/digests
-        run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}@sha256:%s ' *)
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf 'ghcr.io/${{ steps.set-vars.outputs.ACTOR }}/${{ env.IMAGE_NAME }}@sha256:%s ' *)
-
-      - name: Inspect image
-        run: |
-          docker buildx imagetools inspect ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}

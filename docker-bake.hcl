@@ -1,4 +1,4 @@
-variable "TAG" {
+variable "DEFAULT_TAG" {
   default = "baidunetdisk-docker:latest"
 }
 
@@ -10,7 +10,7 @@ group "linux-arm64" {
 }
 
 target "docker-metadata-action" {
-  tags = ["${TAG}"]
+  tags = ["${DEFAULT_TAG}"]
 }
 
 target "image-amd64" {

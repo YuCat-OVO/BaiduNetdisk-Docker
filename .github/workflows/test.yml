@@ -50,7 +50,7 @@ jobs:
           push: true
           targets: ${{ steps.set-vars.outputs.TARGET }}
         env:
-          TAG: ${{ env.BUILD_TAG }}-${{ steps.set-vars.outputs.TARGET }}
+          DEFAULT_TAG: ${{ env.BUILD_TAG }}-${{ steps.set-vars.outputs.TARGET }}
 
       - name: Test
         run: |
