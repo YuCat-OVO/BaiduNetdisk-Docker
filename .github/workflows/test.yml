@@ -11,7 +11,7 @@ on:
       - "**.md"
 
 env:
-  BUILD_TAG: baidunetdisk-docker:test
+  BUILD_TAG: localhost:5000/yucatovo/baidunetdisk-docker:test
 
 jobs:
   test:
@@ -20,6 +20,11 @@ jobs:
       fail-fast: false
       matrix:
         platforms: ["linux/amd64", "linux/arm64"]
+    services:
+      registry:
+        image: registry:3.0.0-alpha.1
+        ports:
+          - 5000:5000
     steps:
       - name: Checkout
         uses: actions/checkout@v4
