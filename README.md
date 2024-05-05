@@ -1,4 +1,5 @@
 # BaiduNetdisk-Docker
+<img src="https://raw.githubusercontent.com/YuCat-OVO/BaiduNetdisk-Docker/main/docs/baidunetdisk.png" style="width: 120px">
 
 一款基于 [Linuxserver.io](https://www.linuxserver.io/) 的 [KasmVNC 基础镜像](https://github.com/linuxserver/docker-baseimage-kasmvnc)以及百度网盘官方客户端的 Docker 镜像，支持 amd64 和 arm64 架构。
 
@@ -161,7 +162,7 @@ spec:
 ```
 
 ## 注意事项
-- 目前 KasmVNC 对于 Firefox 的支持貌似有问题，推荐使用 Chromium 作为核心的浏览器获得最佳体验（比如 KasmVNC 的无缝剪贴板）。
+- KasmVNC 对于 Firefox 的支持不够好，推荐使用 Chromium 作为核心的浏览器获得最佳体验（比如 KasmVNC 的无缝剪贴板）。
 - Podman 如果需要启用硬件加速，可能需要往 `/etc/containers/containers.conf.d/` 添加配置（详见：[containers.conf.5](https://github.com/containers/common/blob/main/docs/containers.conf.5.md)）：
 ```
  [containers]
@@ -169,11 +170,15 @@ spec:
  ```
 - 如果遇到 `Failed to close file descriptor for child process (Operation not permitted)` 的错误，请使用 `--security-opt seccomp=unconfined` 启动（[来源](https://gist.github.com/nathabonfim59/b088db8752673e1e7acace8806390242)），可能会有安全问题。
 - Linuxserver.io 镜像不设置 `PUID` 和 `PGID` 变量的时候会默认使用 `911` 作为运行用户和组 ID，请确认用户权限正确。
+- 由于本人手上并没有可以进行测试的 arm64 设备，所以对于 arm64 的支持可能有不足。如果您在使用的时候遇到了问题，可以直接下载百度网盘Linux版本或者尝试使用其他大佬所编写的镜像查看是否能够正常运行。
 
 ## 感谢以下项目：
 - [KasmVNC Base Images from LinuxServer](https://github.com/linuxserver/docker-baseimage-kasmvnc)
 - [eMUQI/baidunetdisk-arm64-vnc](https://github.com/eMUQI/baidunetdisk-arm64-vnc)
 - [gshang2017/docker](https://github.com/gshang2017/docker)
+
+## 截图
+![arm64](https://raw.githubusercontent.com/YuCat-OVO/BaiduNetdisk-Docker/main/docs/arm.png)
 
 ## 其他
 同时也感谢参与反馈与测试的所有人
