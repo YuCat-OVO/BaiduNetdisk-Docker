@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platforms: ["linux/amd64", "linux/arm64"]
+        platform: ["linux/amd64", "linux/arm64"]
     services:
       registry:
         image: registry:3.0.0-alpha.1
@@ -32,7 +32,7 @@ jobs:
       - name: Set the value
         id: set-vars
         run: |
-          echo "TARGET=$(echo ${{ matrix.platforms }} | sed 's#/#-#g')" >> "$GITHUB_OUTPUT"
+          echo "TARGET=$(echo ${{ matrix.platform }} | sed 's#/#-#g')" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -41,7 +41,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           driver-opts: network=host
-          platforms: ${{ matrix.platforms }}
+          platform: ${{ matrix.platform }}
 
       - name: Build
         uses: docker/bake-action@v4
@@ -53,4 +53,4 @@ jobs:
 
       - name: Test
         run: |
-          docker run -t --rm "${{ env.BUILD_TAG }}-${{ steps.set-vars.outputs.TARGET }}" /usr/bin/mytest
+          docker run -t --rm --platform "${{ matrix.platform }}" "${{ env.BUILD_TAG }}-${{ steps.set-vars.outputs.TARGET }}" /usr/bin/mytest
