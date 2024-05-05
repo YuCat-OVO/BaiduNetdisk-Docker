@@ -45,7 +45,9 @@ RUN \
     fi \
     done && \
     dpkg -i /tmp/baidunetdisk.deb && \
+    echo "**** add test ****" && \
     chmod +x /usr/bin/mytest && \
+    sed -i "s/baidunetdisk --no-sandbox/baidunetdisk --no-sandbox --disable-gpu-sandbox/g" root/usr/bin/mytest; \
     echo "**** cleanup ****" && \
     apt-get clean && \
     rm -rf \

@@ -44,6 +44,7 @@ RUN \
     fi \
     done && \
     dpkg -i /tmp/baidunetdisk.deb && \
+    echo "**** add test ****" && \
     chmod +x /usr/bin/mytest && \
     echo "**** cleanup ****" && \
     apt-get clean && \
