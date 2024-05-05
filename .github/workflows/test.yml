@@ -2,13 +2,13 @@ name: test
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - "main"
-      - "develop"
-    paths-ignore:
-      - "docs/**"
-      - "**.md"
+#   push:
+#     branches:
+#       - "main"
+#       - "develop"
+#     paths-ignore:
+#       - "docs/**"
+#       - "**.md"
 
 env:
   BUILD_TAG: localhost:5000/yucatovo/baidunetdisk-docker:test
