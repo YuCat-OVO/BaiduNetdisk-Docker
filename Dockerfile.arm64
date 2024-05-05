@@ -5,7 +5,7 @@ RUN \
     sed -i 's/dl-cdn.alpinelinux.org/mirrors.lzu.edu.cn/g' /etc/apk/repositories && \
     apk update && \
     apk add wget curl jq &&\
-    wget $(curl 'https://yun.baidu.com/disk/cmsdata?platform=linux&page=1&num=1' | jq -r '.["list"][0]["url_1"]' | sed "s/amd64/arm64/g") -O /tmp/baidunetdisk.deb
+    wget -nv $(curl 'https://yun.baidu.com/disk/cmsdata?platform=linux&page=1&num=1' | jq -r '.["list"][0]["url_1"]' | sed "s/amd64/arm64/g") -O /tmp/baidunetdisk.deb
 
 FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm-062d5346-ls56
 
