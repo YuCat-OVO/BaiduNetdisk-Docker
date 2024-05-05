@@ -1,4 +1,5 @@
 # BaiduNetdisk-Docker
+<img src="https://raw.githubusercontent.com/YuCat-OVO/BaiduNetdisk-Docker/main/docs/baidunetdisk.png" style="width: 120px">
 
 一款基于 [Linuxserver.io](https://www.linuxserver.io/) 的 [KasmVNC 基础镜像](https://github.com/linuxserver/docker-baseimage-kasmvnc)以及百度网盘官方客户端的 Docker 镜像，支持 amd64 和 arm64 架构。
 
@@ -14,28 +15,28 @@
 
 #### 可选环境变量 
 
-|     Variable      | Description                                                                                                                                                                                          |
-| :---------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|    CUSTOM_PORT    | 容器侦听 http 的内部端口（如果需要更改默认的 8080 端口）。                                                                                                                                           |
-| CUSTOM_HTTPS_PORT | 容器侦听 https 的内部端口（如果需要更改默认的 8181 端口）。                                                                                                                                          |
-|    CUSTOM_USER    | HTTP 基本身份验证用户名，默认为 abc。                                                                                                                                                                |
-|     PASSWORD      | HTTP 基本身份验证密码，默认为 abc。如果未设置，则不会进行身份验证                                                                                                                                    |
-|     SUBFOLDER     | 应用程序的 subfolder 参数（如果为容器运行了子文件夹反向代理），需要使用两个斜线包裹 例如： `/subfolder/`                                                                                             |
-|       TITLE       | Web 浏览器上显示的页面标题，默认为 “KasmVNC Client”。                                                                                                                                                |
-|      FM_HOME      | 这是文件管理器的主目录（默认主目录），默认为“/config”。                                                                                                                                              |
-|   START_DOCKER    | 如果设置为 false，具有特权的容器将不会自动启动 DinD Docker 设置。                                                                                                                                    |
+|     Variable      | Description                                                                                                                                                                                               |
+| :---------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|    CUSTOM_PORT    | 容器侦听 http 的内部端口（如果需要更改默认的 8080 端口）。                                                                                                                                                |
+| CUSTOM_HTTPS_PORT | 容器侦听 https 的内部端口（如果需要更改默认的 8181 端口）。                                                                                                                                               |
+|    CUSTOM_USER    | HTTP 基本身份验证用户名，默认为 abc。                                                                                                                                                                     |
+|     PASSWORD      | HTTP 基本身份验证密码，默认为 abc。如果未设置，则不会进行身份验证                                                                                                                                         |
+|     SUBFOLDER     | 应用程序的 subfolder 参数（如果为容器运行了子文件夹反向代理），需要使用两个斜线包裹 例如： `/subfolder/`                                                                                                  |
+|       TITLE       | Web 浏览器上显示的页面标题，默认为 “KasmVNC Client”。                                                                                                                                                     |
+|      FM_HOME      | 这是文件管理器的主目录（默认主目录），默认为“/config”。                                                                                                                                                   |
+|   START_DOCKER    | 如果设置为 false，具有特权的容器将不会自动启动 DinD Docker 设置。                                                                                                                                         |
 |      DRINODE      | 如果在 /dev/dri 中挂载了支持硬件加速的 GPU 设备（详见：[DRI3 GPU Acceleration](https://www.kasmweb.com/kasmvnc/docs/master/gpu_acceleration.html)），这个变量允许您指定设备，例如： `/dev/dri/renderD128` |
-|      LC_ALL       | 设置容器中运行的语言，例如：`zh_CN.UTF-8` `en_US.UTF-8`                                                                                                                                              |
-|     NO_DECOR      | 如果设置，应用程序将在没有窗口边框的情况下运行，以用作 PWA。                                                                                                                                         |
-|      NO_FULL      | 使用 openbox 时不要自动全屏应用程序。                                                                                                                                                                |
+|      LC_ALL       | 设置容器中运行的语言，例如：`zh_CN.UTF-8` `en_US.UTF-8`                                                                                                                                                   |
+|     NO_DECOR      | 如果设置，应用程序将在没有窗口边框的情况下运行，以用作 PWA。                                                                                                                                              |
+|      NO_FULL      | 使用 openbox 时不要自动全屏应用程序。                                                                                                                                                                     |
 
 #### 可选的运行配置
 
-|                    Variable                    | Description                                                                                                                                                              |
-| :--------------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|                    Variable                    | Description                                                                                                                                                                      |
+| :--------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 |                 `--privileged`                 | 将在容器内启动 Docker in Docker (DinD) 设置，以便在隔离环境中使用 docker。为了提高性能，可以将容器内的 Docker 目录挂载到主机，例如：-v /home/user/docker-data:/var/lib/docker 。 |
-| `-v /var/run/docker.sock:/var/run/docker.sock` | 安装在主机的 Docker 套接字中，以通过 CLI 与其交互或使用支持 Docker 的应用程序。                                                                                          |
-|          `--device /dev/dri:/dev/dri`          | 将 GPU 安装到容器中，这可以与 `DRINODE` 环境变量结合使用，以利用主机显卡来实现 GPU 加速应用程序。仅支持开源驱动程序，例如：（Intel、AMDGPU、Radeon、ATI、Nouveau）       |
+| `-v /var/run/docker.sock:/var/run/docker.sock` | 安装在主机的 Docker 套接字中，以通过 CLI 与其交互或使用支持 Docker 的应用程序。                                                                                                  |
+|          `--device /dev/dri:/dev/dri`          | 将 GPU 安装到容器中，这可以与 `DRINODE` 环境变量结合使用，以利用主机显卡来实现 GPU 加速应用程序。仅支持开源驱动程序，例如：（Intel、AMDGPU、Radeon、ATI、Nouveau）               |
 
 ### 无损模式
 
@@ -161,7 +162,7 @@ spec:
 ```
 
 ## 注意事项
-- 目前 KasmVNC 对于 Firefox 的支持貌似有问题，推荐使用 Chromium 作为核心的浏览器获得最佳体验（比如 KasmVNC 的无缝剪贴板）。
+- KasmVNC 对于 Firefox 的支持不够好，推荐使用 Chromium 作为核心的浏览器获得最佳体验（比如 KasmVNC 的无缝剪贴板）。
 - Podman 如果需要启用硬件加速，可能需要往 `/etc/containers/containers.conf.d/` 添加配置（详见：[containers.conf.5](https://github.com/containers/common/blob/main/docs/containers.conf.5.md)）：
 ```
  [containers]
@@ -169,11 +170,15 @@ spec:
  ```
 - 如果遇到 `Failed to close file descriptor for child process (Operation not permitted)` 的错误，请使用 `--security-opt seccomp=unconfined` 启动（[来源](https://gist.github.com/nathabonfim59/b088db8752673e1e7acace8806390242)），可能会有安全问题。
 - Linuxserver.io 镜像不设置 `PUID` 和 `PGID` 变量的时候会默认使用 `911` 作为运行用户和组 ID，请确认用户权限正确。
+- 由于本人手上并没有可以进行测试的 arm64 设备，所以对于 arm64 的支持可能有不足。如果您在使用的时候遇到了问题，可以直接下载百度网盘[Linux版本](https://pkg-ant.baidu.com/issue/netdisk/LinuxGuanjia/4.17.7/baidunetdisk_4.17.7_amd64.deb)或者尝试使用其他大佬所编写的镜像 [[eMUQI/baidunetdisk-arm64-vnc](https://github.com/eMUQI/baidunetdisk-arm64-vnc)] [[gshang2017/docker](https://github.com/gshang2017/docker)] 查看是否能够正常运行。
 
 ## 感谢以下项目：
 - [KasmVNC Base Images from LinuxServer](https://github.com/linuxserver/docker-baseimage-kasmvnc)
 - [eMUQI/baidunetdisk-arm64-vnc](https://github.com/eMUQI/baidunetdisk-arm64-vnc)
 - [gshang2017/docker](https://github.com/gshang2017/docker)
+
+## 截图
+![arm64](https://raw.githubusercontent.com/YuCat-OVO/BaiduNetdisk-Docker/main/docs/arm.png)
 
 ## 其他
 同时也感谢参与反馈与测试的所有人

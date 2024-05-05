@@ -127,14 +127,14 @@ jobs:
             *.output=type=image,"name=${{ env.DOCKERHUB_SLUG }},${{ env.GHCR_SLUG }}",push-by-digest=true,name-canonical=true,push=true
 
       - name: Export digest (amd64)
-        if: ${{ matrix.platform }} == "linux/amd64"
+        if: matrix.platform == 'linux/amd64'
         run: |
           mkdir -p /tmp/digests
           digest="${{ fromJSON(steps.bake.outputs.metadata).image-amd64['containerimage.digest'] }}"
           touch "/tmp/digests/${digest#sha256:}"
 
       - name: Export digest (arm64)
-        if: ${{ matrix.platform }} == "linux/arm64"
+        if: matrix.platform == 'linux/arm64'
         run: |
           mkdir -p /tmp/digests
           digest="${{ fromJSON(steps.bake.outputs.metadata).image-arm64['containerimage.digest'] }}"

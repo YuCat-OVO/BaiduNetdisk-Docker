@@ -1,14 +1,19 @@
 name: test
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+  
 on:
   workflow_dispatch:
-#   push:
-#     branches:
-#       - "main"
-#       - "develop"
-#     paths-ignore:
-#       - "docs/**"
-#       - "**.md"
+  # push:
+  #   branches:
+  #     - "main"
+  #     - "develop"
+  #   paths-ignore:
+  #     - ".github/**"
+  #     - "docs/**"
+  #     - "**.md"
 
 env:
   BUILD_TAG: localhost:5000/yucatovo/baidunetdisk-docker:test
@@ -55,5 +60,4 @@ jobs:
 
       - name: Test
         run: |
-          uname -m
           docker run --rm  --platform "${{ matrix.platform }}" alpine:edge echo hello
