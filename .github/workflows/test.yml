@@ -1,0 +1,51 @@
+name: test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+      - "develop"
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+    paths-ignore:
+      - ".github/**"
+      - "docs/**"
+      - "**.md"
+env:
+  BUILD_TAG: baidunetdisk-docker:test
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platforms: ["linux/amd64", "linux/arm64"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set the value
+        id: set-vars
+        run: |
+          echo "TARGET=$(echo ${{ matrix.platforms }} | sed 's#/#-#g')" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: ${{ matrix.platforms }}
+
+      - name: Build
+        uses: docker/bake-action@v4
+        with:
+          targets: ${{ steps.set-vars.outputs.TARGET }}
+        env: 
+          DEFAULT_TAG: ${{ env.BUILD_TAG }}
+
+      - name: Test
+        run: |
+          docker run -t --rm ${{ env.BUILD_TAG }}

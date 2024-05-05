@@ -5,15 +5,16 @@ on:
   push:
     branches:
       - "main"
+    tags:
+    - "[0-9]+.[0-9]+.[0-9]+"
     paths-ignore:
       - ".github/**"
       - "docs/**"
       - "**.md"
-      - "get_version.py"
 
 env:
   IMAGE_NAME: baidunetdisk-docker
-  DOCKERHUB_SLUG: yucatovo/baidunetdisk-docker
+  DOCKERHUB_SLUG: docker.io/yucatovo/baidunetdisk-docker
   GHCR_SLUG: ghcr.io/yucat-ovo/baidunetdisk-docker
 
 jobs:
