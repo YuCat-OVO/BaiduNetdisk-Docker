@@ -45,6 +45,7 @@ jobs:
       - name: Build
         uses: docker/bake-action@v4
         with:
+          push: true
           targets: ${{ steps.set-vars.outputs.TARGET }}
         env:
           TAG: ${{ env.BUILD_TAG }}
