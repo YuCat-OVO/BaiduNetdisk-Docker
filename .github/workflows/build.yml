@@ -109,7 +109,7 @@ jobs:
         id: bake
         uses: docker/bake-action@v4
         env:
-          PLATFORM: ${{ env.ARCH }}
+          ARCH: ${{ env.ARCH }}
         with:
           files: |
             ./docker-bake.hcl
