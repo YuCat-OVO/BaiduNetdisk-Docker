@@ -2,24 +2,32 @@ variable "DEFAULT_TAG" {
   default = "baidunetdisk-docker:latest"
 }
 
-group "linux-amd64" {
-  targets = ["image-amd64"]
-}
-group "linux-arm64" {
-  targets = ["image-arm64"]
+variable "ARCH" {
+  default = "arm64"
 }
 
 target "docker-metadata-action" {
   tags = ["${DEFAULT_TAG}"]
 }
-
-target "image-amd64" {
-  platforms  = ["linux/amd64"]
-  inherits   = ["docker-metadata-action"]
-  dockerfile = "Dockerfile"
+// Default target if none specified
+group "default" {
+  targets = ["image-local"]
 }
-target "image-arm64" {
-  platforms  = ["linux/arm64"]
+
+target "image" {
   inherits   = ["docker-metadata-action"]
-  dockerfile = "Dockerfile.arm64"
+  dockerfile = format("Dockerfile%s", equal("arm64", ARCH) ? "" : ".${ARCH}")
+}
+
+target "image-local" {
+  inherits = ["image"]
+  output   = ["type=docker"]
+}
+
+target "image-all" {
+  inherits = ["image"]
+  platforms = [
+    "linux/amd64",
+    "linux/arm64",
+  ]
 }
