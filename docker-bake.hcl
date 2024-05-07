@@ -3,7 +3,7 @@ variable "DEFAULT_TAG" {
 }
 
 variable "ARCH" {
-  default = "arm64"
+  default = "amd64"
 }
 
 target "docker-metadata-action" {
@@ -16,7 +16,7 @@ group "default" {
 
 target "image" {
   inherits   = ["docker-metadata-action"]
-  dockerfile = format("Dockerfile%s", equal("amd64", ARCH) ? ".${ARCH}" : "")
+  dockerfile = format("Dockerfile%s", equal("amd64", ARCH) ? "" : ".${ARCH}")
 }
 
 target "image-local" {
