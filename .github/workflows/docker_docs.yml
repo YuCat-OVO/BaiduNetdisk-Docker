@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "main"
+      - main
     paths:
-      - "README.md"
+      - README.md
 
 env:
   IMAGE_NAME: baidunetdisk-docker

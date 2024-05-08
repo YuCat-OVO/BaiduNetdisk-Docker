@@ -8,13 +8,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version"
+        description: Version
         required: false
         type: string
   push:
     branches:
-      - "main"
-      - "develop"
+      - main
+      - develop
     paths-ignore:
       - ".github/**"
       - "docs/**"
