@@ -53,7 +53,7 @@
 ```yaml
 ---
 services:
-  calibre:
+  baidunetdisk:
     image: docker.io/yucatovo/baidunetdisk-docker:latest
     container_name: baidunetdisk
     security_opt:
