@@ -7,7 +7,7 @@ RUN \
     apk --no-cache add wget jq && \
     wget -nv "$(wget -nv -O - 'https://yun.baidu.com/disk/cmsdata?platform=linux&page=1&num=1' | jq -r '.["list"][0]["url_1"]' | sed "s/amd64/arm64/g")" -O "/tmp/baidunetdisk.deb"
 
-FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm-062d5346-ls56
+FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm
 
 LABEL org.opencontainers.image.source="https://github.com/YuCat-OVO/BaiduNetdisk-Docker"
 
