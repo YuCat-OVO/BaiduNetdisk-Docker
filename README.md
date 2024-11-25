@@ -161,6 +161,85 @@ spec:
             type: Directory
 ```
 
+### 反代示例
+#### Nginx
+```
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name 主机;
+
+    # Allow big files
+    client_max_body_size 128M;
+
+    # SSL
+    ssl_certificate /your/cert.pem;
+    ssl_certificate_key /your/key.pem;
+    ssl_session_cache shared:SSL:50m;
+    ssl_session_timeout 4h;
+
+    # Specify cipher
+    ssl_protocols TLSv1.2 TLSv1.3;
+    # 卡拉搜索推荐打开以加速 但是密钥轮换带来的加速并不明显 所以让客户端自行选择
+    ssl_prefer_server_ciphers off;
+    # 卡拉搜索推荐的列表:
+    # ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+    # Mozilla中级推荐的列表:
+    # ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305';
+    ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305';
+    # 关闭无法使用前向加密的功能
+    # 详见 https://github.com/mozilla/server-side-tls/issues/135 https://www.imperialviolet.org/2013/06/27/botchingpfs.html
+    ssl_session_tickets off;
+
+    # OCSP
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_trusted_certificate /your/cert.pem;
+
+    # To serve smaller requests (json/html/images etc) smaller ssl_buffer_size reduces latency but adds overhead
+    # larger value decreases overhead but adds latency. Thus if TTFB is critical, use a smaller value (<=4K). See:
+    # https://github.com/igrigorik/istlsfastyet.com/issues/63
+    ssl_buffer_size 4k;
+
+    location / {
+        # 自己判断需要填写的后端地址
+        set $baidunetdisk baidunetdisk;
+        proxy_pass https://$baidunetdisk:8181;
+
+        # 应用Wiki的配置
+        # https://kasmweb.com/docs/latest/how_to/reverse_proxy.html
+        # The following configurations must be configured when proxying to Kasm Workspaces
+        # WebSocket Support
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        # Host and X headers
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Connectivity Options
+        proxy_http_version 1.1;
+        proxy_read_timeout 1800s;
+        proxy_send_timeout 1800s;
+        proxy_connect_timeout 1800s;
+        proxy_buffering off;
+
+        # Allow large requests to support file uploads to sessions
+        client_max_body_size 10M;
+        
+        # Lossless 
+        # https://github.com/linuxserver/docker-baseimage-kasmvnc
+        add_header 'Cross-Origin-Embedder-Policy' 'require-corp';
+        add_header 'Cross-Origin-Opener-Policy' 'same-origin';
+        add_header 'Cross-Origin-Resource-Policy' 'same-site';
+    }
+}
+
+```
+
 ## 注意事项
 - KasmVNC 对于 Firefox 的支持不够好，推荐使用 Chromium 作为核心的浏览器获得最佳体验（比如 KasmVNC 的无缝剪贴板）。
 - Podman 如果需要启用硬件加速，可能需要往 `/etc/containers/containers.conf.d/` 添加配置（详见：[containers.conf.5](https://github.com/containers/common/blob/main/docs/containers.conf.5.md)）：
