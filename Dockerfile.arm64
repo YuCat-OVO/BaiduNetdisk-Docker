@@ -25,8 +25,6 @@ SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 RUN \
     sed -i "s/deb.debian.org/mirror.bfsu.edu.cn/g" "/etc/apt/sources.list" &&\
     sed -i "s/security.debian.org/mirror.bfsu.edu.cn/g" "/etc/apt/sources.list" &&\
-    echo "**** fix trusted.gpg ****" && \
-    mv "/etc/apt/trusted.gpg" "/etc/apt/trusted.gpg.d/docker.gpg" && \
     apt-get update -y && apt-get install -y --no-install-recommends --no-install-suggests --fix-missing \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
@@ -50,4 +48,5 @@ RUN \
     rm -rf \
     /tmp/* \
     /var/lib/apt/lists/* \
-    /var/tmp/*
+    /var/tmp/* &&\
+    fc-cache -fv
