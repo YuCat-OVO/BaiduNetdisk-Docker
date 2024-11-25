@@ -3,6 +3,11 @@
 
 一款基于 [Linuxserver.io](https://www.linuxserver.io/) 的 [KasmVNC 基础镜像](https://github.com/linuxserver/docker-baseimage-kasmvnc)以及百度网盘官方客户端的 Docker 镜像，支持 amd64 和 arm64 架构。
 
+---
+# **注意：本镜像尚未在 ARM64 平台上进行测试，无法保证其在 ARM64 平台上的可用性。**
+# **Note: This image has not been tested on the ARM64 platform, and its usability on ARM64 is not guaranteed.**
+---
+
 ## 镜像设置
 
 该镜像部署了百度网盘桌面应用程序，并通过浏览器中的 KasmVNC 服务器提供其界面。该接口位于 `http://your-ip:8080` 或者 `https://your-ip:8181`。
