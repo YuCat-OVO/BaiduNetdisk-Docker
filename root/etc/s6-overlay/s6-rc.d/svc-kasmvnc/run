@@ -16,18 +16,18 @@ fi
 RESIZE_MODE="${RESIZE_MODE:-remote}"
 
 exec s6-setuidgid abc \
-  /usr/local/bin/Xvnc "${DISPLAY}" \
+  /usr/local/bin/Xvnc $DISPLAY \
     ${HW3D} \
-    -drinode "${DRINODE}" \
+    -PublicIP 127.0.0.1 \
+    -drinode ${DRINODE} \
     -disableBasicAuth \
     -SecurityTypes None \
     -AlwaysShared \
-    -http-header "Cross-Origin-Embedder-Policy=require-corp" \
-    -http-header "Cross-Origin-Opener-Policy=same-origin" \
-    -geometry "${RESOLUTION}" \
-    -resize "${RESIZE_MODE}" \
+    -http-header Cross-Origin-Embedder-Policy=require-corp \
+    -http-header Cross-Origin-Opener-Policy=same-origin \
+    -geometry ${RESOLUTION} \
     -sslOnly 0 \
     -RectThreads 0 \
     -websocketPort 6901 \
     -interface 0.0.0.0 \
-    -Log "*:stdout:10"
+    -Log *:stdout:10
