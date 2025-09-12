@@ -9,9 +9,9 @@ fi
 
 # Use a default resolution if unset
 if [ -z ${RESOLUTION+x} ]; then
-  RESOLUTION="1024x768"
+  RESOLUTION="1100x725"
 fi
-if [[ ${RESOLUTION} != "1024x768" ]]; then
+if [[ ${RESOLUTION} != "1100x725" ]]; then
   sudo sed -i 's/resize=remote/resize=scale/g' /kclient/public/index.html
 fi
 /usr/bin/openbox-session

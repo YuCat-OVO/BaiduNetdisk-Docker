@@ -11,7 +11,7 @@ fi
 
 # Use a default resolution if unset
 if [ -z ${RESOLUTION+x} ]; then
-  RESOLUTION="1024x768"
+  RESOLUTION="1100x725"
 fi
 
 exec s6-setuidgid abc \
