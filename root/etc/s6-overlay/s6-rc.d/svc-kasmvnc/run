@@ -1,0 +1,35 @@
+#!/bin/bash
+# shellcheck shell=bash
+
+# GPU支持检测
+if ls /dev/dri/renderD* 1> /dev/null 2>&1 && [ -z "${DISABLE_DRI}" ] && ! which nvidia-smi; then
+  HW3D="-hw3d"
+fi
+
+# 渲染设备设置
+: "${DRINODE:=/dev/dri/renderD128}"
+
+# 分辨率处理逻辑
+if [ -z "${RESOLUTION}" ]; then
+  RESOLUTION="1920x1080"
+  RESIZE_MODE="remote"
+else
+  RESIZE_MODE="scale"
+fi
+
+exec s6-setuidgid abc \
+  /usr/local/bin/Xvnc "${DISPLAY}" \
+    ${HW3D} \
+    -drinode "${DRINODE}" \
+    -disableBasicAuth \
+    -SecurityTypes None \
+    -AlwaysShared \
+    -http-header "Cross-Origin-Embedder-Policy=require-corp" \
+    -http-header "Cross-Origin-Opener-Policy=same-origin" \
+    -geometry "${RESOLUTION}" \
+    -resize "${RESIZE_MODE}" \
+    -sslOnly 0 \
+    -RectThreads 0 \
+    -websocketPort 6901 \
+    -interface 0.0.0.0 \
+    -Log "*:stdout:10"
