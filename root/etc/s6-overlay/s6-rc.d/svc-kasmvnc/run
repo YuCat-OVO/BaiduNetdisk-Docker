@@ -10,12 +10,10 @@ fi
 : "${DRINODE:=/dev/dri/renderD128}"
 
 # 分辨率处理逻辑
-if [ -z "${RESOLUTION}" ]; then
-  RESOLUTION="1920x1080"
-  RESIZE_MODE="remote"
-else
-  RESIZE_MODE="scale"
-fi
+# 统一分辨率配置管理
+: ${RESOLUTION:=1920x1080}
+: ${RESIZE_MODE:=${RESOLUTION:+scale}}
+RESIZE_MODE="${RESIZE_MODE:-remote}"
 
 exec s6-setuidgid abc \
   /usr/local/bin/Xvnc "${DISPLAY}" \
