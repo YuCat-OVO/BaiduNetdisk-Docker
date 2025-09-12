@@ -34,6 +34,7 @@
 |      LC_ALL       | 设置容器中运行的语言，例如：`zh_CN.UTF-8` `en_US.UTF-8`                                                                                                                                                   |
 |     NO_DECOR      | 如果设置，应用程序将在没有窗口边框的情况下运行，以用作 PWA。                                                                                                                                              |
 |      NO_FULL      | 使用 openbox 时不要自动全屏应用程序。                                                                                                                                                                     |
+|    RESOLUTION     | 设置容器的固定分辨率，格式为 WIDTHxHEIGHT，例如：1100x725                                                                                                                                                 |
 
 #### 可选的运行配置
 
