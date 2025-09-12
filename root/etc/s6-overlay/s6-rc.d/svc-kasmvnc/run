@@ -1,19 +1,18 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
-# GPU支持检测
-if ls /dev/dri/renderD* 1> /dev/null 2>&1 && [ -z "${DISABLE_DRI}" ] && ! which nvidia-smi; then
+# Pass gpu flags if mounted
+if ls /dev/dri/renderD* 1> /dev/null 2>&1 && [ -z ${DISABLE_DRI+x} ] && ! which nvidia-smi; then
   HW3D="-hw3d"
 fi
+if [ -z ${DRINODE+x} ]; then
+  DRINODE="/dev/dri/renderD128"
+fi
 
-# 渲染设备设置
-: "${DRINODE:=/dev/dri/renderD128}"
-
-# 分辨率处理逻辑
-# 统一分辨率配置管理
-: ${RESOLUTION:=1920x1080}
-: ${RESIZE_MODE:=${RESOLUTION:+scale}}
-RESIZE_MODE="${RESIZE_MODE:-remote}"
+# Use a default resolution if unset
+if [ -z ${RESOLUTION+x} ]; then
+  RESOLUTION="1024x768"
+fi
 
 exec s6-setuidgid abc \
   /usr/local/bin/Xvnc $DISPLAY \
