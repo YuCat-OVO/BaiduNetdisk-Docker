@@ -1,5 +1,5 @@
 variable "DEFAULT_TAG" {
-  default = "baidunetdisk-docker:latest"
+  default = "baidunetdisk-docker:local"
 }
 
 variable "ARCH" {
