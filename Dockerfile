@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM docker.io/library/alpine:edge as download
+FROM docker.io/library/alpine:edge AS download
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 RUN \
@@ -49,3 +49,6 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/* &&\
     fc-cache -fv
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:${CUSTOM_PORT} || exit 1
